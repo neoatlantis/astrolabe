@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-21 05:29:10
+// Transcrypt'ed from Python, 2019-09-21 05:44:26
 function astrolabesvg () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2645,5 +2645,6 @@ function astrolabesvg () {
 			__all__.zoom_vector = zoom_vector;
 		__pragma__ ('</all>')
 	}) ();
+
     return __all__;
 }
