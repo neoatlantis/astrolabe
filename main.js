@@ -124,7 +124,7 @@ var _foundTimeoffsets = [];
 function adjustTimeoffset(){
     const localSendTime = new Date();
     $.ajax({
-        url: "/",
+        url: "/?__=" + Math.random(), // void the caching mechanism
         type: 'HEAD',
     })
     .done(function(data, textStatus, xhr){
