@@ -2,7 +2,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Virtual Astrolabe</title>
-<script src="jquery-3.4.1.slim.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="astrolabesvg.js"></script>
 <script src="main.js"></script>
 <style>
@@ -32,6 +32,16 @@ div#rete svg{
 }
 svg line,circle,polyline{
     stroke: red;
+}
+svg text{
+    fill: red;
+    font-family: monospace;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.tympan-text1:hover{
+    fill: #FFFF00;
 }
 </style>
 </head>

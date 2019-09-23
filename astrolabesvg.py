@@ -210,16 +210,41 @@ def Tympan(latitude):
             svgPoints.append(projectedXYZ)
         svg.polyline(svgPoints)
 
-    # draw time division outside the disk
+    # draw time division and text outside the disk
     drawR1 = projected_r_max + DISK_EXTENSION
     drawR2 = drawR1 + DISK_TIMERING_THICKNESS
+    drawRT = drawR1 + DISK_TIMERING_THICKNESS * 0.25
     svg.circle(0, 0, drawR1)
     svg.circle(0, 0, drawR2)
     
-    for theta in linspace(0, 2*pi, 24):
+    for i in range(0, 24):
+        theta = i * 15 / 180 * pi
+
+        # time division
         endVector1 = (drawR1 * cos(theta), drawR1 * sin(theta))
         endVector2 = (drawR2 * cos(theta), drawR2 * sin(theta))
         svg.line(endVector1[0], endVector1[1], endVector2[0], endVector2[1])
+
+        # hours text
+        textAngle = theta + pi + pi/24
+        svg._raw("""
+            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="1.5em">{}</text>
+        """.format(
+            svg.ratio(drawRT * cos(textAngle)),
+            svg.ratio(drawRT * sin(textAngle)),
+            (textAngle + pi/2) / pi * 180,
+            i
+        ))
+
+    # additional text field on tympan
+    svg._raw("""
+        <text x="0" y="{}" transform="rotate(90)" text-anchor="middle">
+            <tspan class="tympan-text1" x="0" dy="1.2em"></tspan>
+            <tspan class="tympan-text2" x="0" dy="1.2em"></tspan>
+        </text>
+    """.format(
+        svg.ratio(2.2)
+    ))
 
     return svg.toString()
 

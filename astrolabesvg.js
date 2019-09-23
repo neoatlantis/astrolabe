@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-21 05:44:26
+// Transcrypt'ed from Python, 2019-09-22 21:48:00
 function astrolabesvg () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2546,13 +2546,18 @@ function astrolabesvg () {
 			}
 			var drawR1 = projected_r_max + DISK_EXTENSION;
 			var drawR2 = drawR1 + DISK_TIMERING_THICKNESS;
+			var drawRT = drawR1 + DISK_TIMERING_THICKNESS * 0.25;
 			svg.circle (0, 0, drawR1);
 			svg.circle (0, 0, drawR2);
-			for (var theta of linspace (0, 2 * pi, 24)) {
+			for (var i = 0; i < 24; i++) {
+				var theta = ((i * 15) / 180) * pi;
 				var endVector1 = tuple ([drawR1 * cos (theta), drawR1 * sin (theta)]);
 				var endVector2 = tuple ([drawR2 * cos (theta), drawR2 * sin (theta)]);
 				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
+				var textAngle = (theta + pi) + pi / 24;
+				svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="1.5em">{}</text>\n        '.format (svg.ratio (drawRT * cos (textAngle)), svg.ratio (drawRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, i));
 			}
+			svg._raw ('\n        <text x="0" y="{}" transform="rotate(90)" text-anchor="middle">\n            <tspan class="tympan-text1" x="0" dy="1.2em"></tspan>\n            <tspan class="tympan-text2" x="0" dy="1.2em"></tspan>\n        </text>\n    '.format (svg.ratio (2.2)));
 			return svg.toString ();
 		};
 		var getSunArrow1Angle = function (solarEclipticLongitudeInDegrees) {
