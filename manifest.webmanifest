@@ -1,0 +1,7 @@
+{
+    "name": "Virtual Astrolabe",
+    "short_name": "VAstrolabe",
+    "start_url": ".",
+    "display": "standalone",
+    "description": "Displays a virtual astrolabe on your device."
+}
