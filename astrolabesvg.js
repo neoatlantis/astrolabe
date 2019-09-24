@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-22 21:48:00
+// Transcrypt'ed from Python, 2019-09-24 21:12:35
 function astrolabesvg () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2324,8 +2324,9 @@ function astrolabesvg () {
 		var pi = __init__ (__world__.math).pi;
 		var LATITUDE_OF_NORTHERN_TROPIC = (23.43673 / 180) * pi;
 		var LATITUDE_OF_SOUTHERN_TROPIC = (-(23.43673) / 180) * pi;
-		var DISK_EXTENSION = 0.15;
-		var DISK_TIMERING_THICKNESS = 0.25;
+		var DISK_EXTENSION = 0.25;
+		var DISK_TIMERING_THICKNESS = 0.2;
+		var SOLAR_TERMS = list (['立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至', '小寒', '大寒']);
 		var latlng2xyz = function (latlng) {
 			var __left0__ = latlng;
 			var lat = __left0__ [0];
@@ -2609,6 +2610,24 @@ function astrolabesvg () {
 				}
 				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
 			}
+			var outerR1 = projected_r_max;
+			var outerR2 = outerR1 + DISK_EXTENSION;
+			var outerRM = (outerR1 + outerR2) / 2;
+			var outerRT = outerR1 + DISK_EXTENSION * 0.25;
+			var solarTermsIndex = 0;
+			for (var t = 0; t < 24; t++) {
+				var theta = ((pi / 12) * t + pi / 2) - (3 * pi) / 12;
+				var endVector1 = tuple ([outerR1 * cos (theta), outerR1 * sin (theta)]);
+				if (__mod__ (t, 2) == 1) {
+					var endVector2 = tuple ([outerR2 * cos (theta), outerR2 * sin (theta)]);
+				}
+				else {
+					var endVector2 = tuple ([outerRM * cos (theta), outerRM * sin (theta)]);
+				}
+				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
+				var textAngle = 2 * pi - theta;
+				svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="2.5em">{}</text>\n        '.format (svg.ratio (outerRT * cos (textAngle)), svg.ratio (outerRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, SOLAR_TERMS [t]));
+			}
 			var theta = (3 * pi) / 2;
 			var R = getRFromEcliptic (theta);
 			svg._raw ('\n    <g transform="translate({} 0)">\n\n    <g class="sun-arrow-1">\n    <circle cx="0" cy="0" r="{}" stroke-width="10" visibility="visible" opacity="0.4" />\n    <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n    <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n\n    </g>\n\n    <g class="sun-arrow-2">\n        <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n        <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n    '.format (svg.ratio (projected_ecliptic_center), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_r_max + DISK_EXTENSION), svg.ratio (projected_r_max + DISK_EXTENSION)));
@@ -2623,6 +2642,7 @@ function astrolabesvg () {
 			__all__.LATITUDE_OF_NORTHERN_TROPIC = LATITUDE_OF_NORTHERN_TROPIC;
 			__all__.LATITUDE_OF_SOUTHERN_TROPIC = LATITUDE_OF_SOUTHERN_TROPIC;
 			__all__.Rete = Rete;
+			__all__.SOLAR_TERMS = SOLAR_TERMS;
 			__all__.SVG = SVG;
 			__all__.Tympan = Tympan;
 			__all__._ = _;
@@ -2650,6 +2670,5 @@ function astrolabesvg () {
 			__all__.zoom_vector = zoom_vector;
 		__pragma__ ('</all>')
 	}) ();
-
     return __all__;
 }

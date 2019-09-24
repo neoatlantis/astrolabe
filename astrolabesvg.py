@@ -4,8 +4,16 @@ from math import sin, cos, asin, acos, pi
 
 LATITUDE_OF_NORTHERN_TROPIC = (23.43673 / 180 * pi)
 LATITUDE_OF_SOUTHERN_TROPIC = (-23.43673 / 180 * pi)
-DISK_EXTENSION = 0.15
-DISK_TIMERING_THICKNESS = 0.25
+
+DISK_EXTENSION = 0.25
+DISK_TIMERING_THICKNESS = 0.2
+
+SOLAR_TERMS = [
+    "立春", "雨水", "惊蛰", "春分", "清明", "谷雨",
+    "立夏", "小满", "芒种", "夏至", "小暑", "大暑",
+    "立秋", "处暑", "白露", "秋分", "寒露", "霜降",
+    "立冬", "小雪", "大雪", "冬至", "小寒", "大寒"
+]
 
 
 def latlng2xyz(latlng):
@@ -311,12 +319,14 @@ def Rete():
         R = (-b + (b**2-4*a*c)**0.5) / (2 * a)
         return R
     
-    # draw divisions on the ecliptic
+    # draw divisions on the ecliptic,solarterms on the outside ring
 
     for t in range(0, 360, 5):
         theta = t / 180 * pi + 3*pi/2
-        R = getRFromEcliptic(theta)
+
+        # on ecliptic
         
+        R = getRFromEcliptic(theta)
         # R is the radius from center to a point on ecliptic circle, which
         # point is given by an centric angle theta
         endVector1 = ((R-0.1) * cos(theta), (R-0.1) * sin(theta))
@@ -327,8 +337,39 @@ def Rete():
                 endVector2 = ((R+0.1) * cos(theta), (R+0.1) * sin(theta))
             else:
                 endVector2 = (R * cos(theta), R * sin(theta))
-        
         svg.line(endVector1[0], endVector1[1], endVector2[0], endVector2[1])
+
+    # solar terms division
+    outerR1 = projected_r_max
+    outerR2 = outerR1 + DISK_EXTENSION
+    outerRM = (outerR1 + outerR2) / 2
+    outerRT = outerR1 + DISK_EXTENSION * 0.25
+    solarTermsIndex = 0
+    
+    for t in range(0, 24):
+        theta = pi / 12 * t + pi/2 - 3 * pi / 12 
+
+        endVector1 = (outerR1 * cos(theta), outerR1 * sin(theta))
+        # if solar term is a midpoint(中气), draw to full extension, otherwise
+        # draw to half extension
+        if t % 2 == 1:
+            endVector2 = (outerR2 * cos(theta), outerR2 * sin(theta))
+        else:
+            endVector2 = (outerRM * cos(theta), outerRM * sin(theta))
+        svg.line(endVector1[0], endVector1[1], endVector2[0], endVector2[1])
+
+        # solar terms text
+        textAngle = 2*pi - theta # - pi / 24 * 6# + pi
+        svg._raw("""
+            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="2.5em">{}</text>
+        """.format(
+            svg.ratio(outerRT * cos(textAngle)),
+            svg.ratio(outerRT * sin(textAngle)),
+            (textAngle + pi/2) / pi * 180,
+            SOLAR_TERMS[t]
+        ))
+
+
 
     # adds an element for repesenting the sun on ecliptic
     theta = 3 * pi / 2
