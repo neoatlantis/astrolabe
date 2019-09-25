@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from math import sin, cos, asin, acos, pi
+from stardata import CONSTELLATIONS
 
 LATITUDE_OF_NORTHERN_TROPIC = (23.43673 / 180 * pi)
 LATITUDE_OF_SOUTHERN_TROPIC = (-23.43673 / 180 * pi)
@@ -14,6 +15,27 @@ SOLAR_TERMS = [
     "立秋", "处暑", "白露", "秋分", "寒露", "霜降",
     "立冬", "小雪", "大雪", "冬至", "小寒", "大寒"
 ]
+
+STARMARK_ADJUST = {
+                # deltaRA, deltaDE
+   "50Alp UMa": (0, +0.15),
+   "85Eta UMa": (0, -0.03),
+   "77Eps UMa": (0, -0.03),
+   "32Alp Leo": (+0.08, -0.03),
+   "58Alp Ori": (-0.13, +0.05),
+   "24Gam Ori": (+0.12, +0.05),
+   "19Bet Ori": (+0.10, +0.05),
+   "46Eps Ori": (-0.12, +0.03),
+   "16Alp Boo": (0, -0.03),
+   "3Alp Lyr" : (0.13, -0.03),
+   "53Alp Aql": (-0.13, +0.02),
+   "13Alp Aur": (+0.13, +0.18),
+   "34Bet Aur": (-0.22, 0),
+   "66Alp Gem": (-0.22, +0.1),
+   "78Bet Gem": (-0.20, +0.06),
+   "24Gam Gem": (+0.14, +0.05),
+   "112Bet Tau": (-0.18, +0.07),
+}
 
 
 def latlng2xyz(latlng):
@@ -88,16 +110,14 @@ def cross_product(xyz1, xyz2):
     )
 
 def linspace(x0, x1, n):
-    assert x0 < x1 and n > 0
+    assert n > 1
     ret = []
     t = x0
-    d = (x1 - x0) / n
-    while t < x1:
+    d = (x1 - x0) / (n-1)
+    for i in range(0, n):
         ret.append(t)
         t += d
-    ret.append(x1)
     return ret
-
 
 
 def circle_parametric(vector1, vector2, angle):
@@ -203,7 +223,7 @@ def Tympan(latitude):
             if pointXYZ[2] < z_of_southern_tropic: continue # that goes outside
             projectedXYZ = projectionXYZ(pointXYZ)
             svgPoints.append(projectedXYZ)
-        svg.polyline(svgPoints)
+        svg.polyline(svgPoints, "tympan-mesh")
 
     # draw azimuth circles in horizontal coordinates
 
@@ -216,7 +236,7 @@ def Tympan(latitude):
             if pointXYZ[2] < z_of_southern_tropic: continue # that goes outside
             projectedXYZ = projectionXYZ(pointXYZ)
             svgPoints.append(projectedXYZ)
-        svg.polyline(svgPoints)
+        svg.polyline(svgPoints, "tympan-mesh")
 
     # draw time division and text outside the disk
     drawR1 = projected_r_max + DISK_EXTENSION
@@ -379,7 +399,7 @@ def Rete():
     <g transform="translate({} 0)">
 
     <g class="sun-arrow-1">
-    <circle cx="0" cy="0" r="{}" stroke-width="10" visibility="visible" opacity="0.4" />
+    <circle cx="0" cy="0" r="{}" stroke-width="10" visibility="visible" opacity="0.4" fill="none"/>
     <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />
     <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />
     </g>
@@ -399,8 +419,107 @@ def Rete():
         svg.ratio(projected_r_max + DISK_EXTENSION)
     ))
 
+    drawStars(svg)
 
     return svg.toString()
 
 
+##############################################################################
 
+def drawStars(reteSVG):
+    svg = reteSVG
+
+    drawnStars = []
+    def drawStar(star):
+        if star["name"] in drawnStars: return
+        projectRA = 2*pi - star["RA"] * 15 / 180 * pi + pi*3/2
+        point = projectionLatlng((
+            star["DE"] / 180 * pi,
+            projectRA
+        ))
+        Vmag = star["Vmag"]
+        if Vmag <= 0:
+            size = 0.04
+        elif Vmag <= 1:
+            size = 0.03
+        elif Vmag <= 2:
+            size = 0.02
+        elif Vmag < 3:
+            size = 0.01
+        else:
+            return
+        svg.circle(point[0], point[1], size, "star")
+
+        if star["mark"]:
+            deltaRA = 0 
+            deltaDE = -0.03
+            if star["name"] in STARMARK_ADJUST:
+                deltaRA += STARMARK_ADJUST[star["name"]][0]
+                deltaDE += STARMARK_ADJUST[star["name"]][1]
+            pointText = projectionLatlng((
+                star["DE"] / 180 * pi + deltaDE,
+                projectRA + deltaRA
+            ))
+
+            starname = star["mark"][0]
+            svg._raw("""<text
+                transform="translate({},{}) rotate({})"
+                class="starname"
+                text-anchor="middle">{}</text>""".format(
+                svg.ratio(pointText[0]), svg.ratio(pointText[1]),
+                (projectRA + deltaRA + pi/2) / pi * 180,
+                starname
+            ))
+            print(starname, star["name"])
+
+        drawnStars.append(star["name"])
+
+    def drawLine(star0, star1):
+#        LATITUDE_OF_SOUTHERN_TROPIC
+        n = 10
+        ra0 = star0["RA"] * 15 / 180 * pi
+        dec0 = star0["DE"] / 180 * pi
+        ra1 = star1["RA"] * 15 / 180 * pi
+        dec1 = star1["DE"] / 180 * pi
+
+        if ra0 > ra1:
+            # swap ra0 and ra1
+            t = dec1
+            dec1 = dec0
+            dec0 = t
+            t = ra1
+            ra1 = ra0
+            ra0 = t
+
+        # ra0 < ra1
+        if ra1 - ra0 > pi:
+            ra0 += 2*pi
+            t = dec1
+            dec1 = dec0
+            dec0 = t
+            t = ra1
+            ra1 = ra0
+            ra0 = t
+
+            
+        ra_n = linspace(ra0, ra1, n)
+        dec_n = linspace(dec0, dec1, n)
+
+        points = []
+        for i in range(0, n):
+            ra_i, dec_i = ra_n[i], dec_n[i]
+            if dec_i < LATITUDE_OF_SOUTHERN_TROPIC: continue
+            point = projectionLatlng((
+                dec_i,
+                2*pi - ra_i + pi*3/2
+            ))
+            points.append(point)
+        svg.polyline(points, "constellation-line")
+
+    for constellation in CONSTELLATIONS:
+        for line in constellation["lines"]:
+            for i in range(0, len(line) - 1):
+                drawStar(line[i])
+                drawLine(line[i], line[i+1])
+                drawStar(line[i+1])
+    return svg
