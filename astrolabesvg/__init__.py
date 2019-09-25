@@ -255,12 +255,13 @@ def drawStars(reteSVG):
 
     drawnStars = []
     def drawStar(star):
+        starRA = star["RA"] * 15 / 180 * pi
+        starDE = star["DE"] / 180 * pi
+
         if star["name"] in drawnStars: return
-        projectRA = 2*pi - star["RA"] * 15 / 180 * pi + pi*3/2
-        point = projectionLatlng((
-            star["DE"] / 180 * pi,
-            projectRA
-        ))
+        if starDE < LATITUDE_OF_SOUTHERN_TROPIC: return
+        projectRA = pi*3/2 - starRA
+        point = projectionLatlng((starDE, projectRA))
         Vmag = star["Vmag"]
         if Vmag <= 0:
             size = 0.04
@@ -281,7 +282,7 @@ def drawStars(reteSVG):
                 deltaRA += STARMARK_ADJUST[star["name"]][0]
                 deltaDE += STARMARK_ADJUST[star["name"]][1]
             pointText = projectionLatlng((
-                star["DE"] / 180 * pi + deltaDE,
+                starDE + deltaDE,
                 projectRA + deltaRA
             ))
 

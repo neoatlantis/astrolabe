@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-25 21:20:23
+// Transcrypt'ed from Python, 2019-09-25 21:49:42
 function __init__ () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2495,6 +2495,7 @@ function __init__ () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'stardata', {
@@ -2600,14 +2601,19 @@ function __init__ () {
 		var pi = __init__ (__world__.constants).pi;
 		var SVG = __init__ (__world__.svg).SVG;
 		var __name__ = __init__ (__world__.mathfunc).__name__;
+		var acos = __init__ (__world__.mathfunc).acos;
 		var add_vector = __init__ (__world__.mathfunc).add_vector;
+		var asin = __init__ (__world__.mathfunc).asin;
 		var bisect = __init__ (__world__.mathfunc).bisect;
 		var circle_parametric = __init__ (__world__.mathfunc).circle_parametric;
+		var cos = __init__ (__world__.mathfunc).cos;
 		var cross_product = __init__ (__world__.mathfunc).cross_product;
 		var latlng2xyz = __init__ (__world__.mathfunc).latlng2xyz;
 		var linspace = __init__ (__world__.mathfunc).linspace;
+		var pi = __init__ (__world__.mathfunc).pi;
 		var projectionLatlng = __init__ (__world__.mathfunc).projectionLatlng;
 		var projectionXYZ = __init__ (__world__.mathfunc).projectionXYZ;
+		var sin = __init__ (__world__.mathfunc).sin;
 		var sphere_angle = __init__ (__world__.mathfunc).sphere_angle;
 		var zoom_vector = __init__ (__world__.mathfunc).zoom_vector;
 		var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
@@ -2755,11 +2761,16 @@ function __init__ () {
 			var svg = reteSVG;
 			var drawnStars = list ([]);
 			var drawStar = function (star) {
+				var starRA = ((star ['RA'] * 15) / 180) * pi;
+				var starDE = (star ['DE'] / 180) * pi;
 				if (__in__ (star ['name'], drawnStars)) {
 					return ;
 				}
-				var projectRA = (2 * pi - ((star ['RA'] * 15) / 180) * pi) + (pi * 3) / 2;
-				var point = projectionLatlng (tuple ([(star ['DE'] / 180) * pi, projectRA]));
+				if (starDE < LATITUDE_OF_SOUTHERN_TROPIC) {
+					return ;
+				}
+				var projectRA = (pi * 3) / 2 - starRA;
+				var point = projectionLatlng (tuple ([starDE, projectRA]));
 				var Vmag = star ['Vmag'];
 				if (Vmag <= 0) {
 					var size = 0.04;
@@ -2784,7 +2795,7 @@ function __init__ () {
 						deltaRA += STARMARK_ADJUST [star ['name']] [0];
 						deltaDE += STARMARK_ADJUST [star ['name']] [1];
 					}
-					var pointText = projectionLatlng (tuple ([(star ['DE'] / 180) * pi + deltaDE, projectRA + deltaRA]));
+					var pointText = projectionLatlng (tuple ([starDE + deltaDE, projectRA + deltaRA]));
 					var starname = star ['mark'] [0];
 					svg._raw ('<text\n                transform="translate({},{}) rotate({})"\n                class="starname"\n                text-anchor="middle">{}</text>'.format (svg.ratio (pointText [0]), svg.ratio (pointText [1]), (((projectRA + deltaRA) + pi / 2) / pi) * 180, starname));
 					print (starname, star ['name']);
@@ -2884,6 +2895,5 @@ function __init__ () {
 			__all__.zoom_vector = zoom_vector;
 		__pragma__ ('</all>')
 	}) ();
-
     return __all__;
 }
