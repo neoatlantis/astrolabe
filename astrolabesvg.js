@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-25 21:10:32
+// Transcrypt'ed from Python, 2019-09-25 21:20:23
 function __init__ () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2349,6 +2349,154 @@ function __init__ () {
 
 	__nest__ (
 		__all__,
+		'mathfunc', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'mathfunc';
+					var sin = __init__ (__world__.math).sin;
+					var cos = __init__ (__world__.math).cos;
+					var asin = __init__ (__world__.math).asin;
+					var acos = __init__ (__world__.math).acos;
+					var pi = __init__ (__world__.math).pi;
+					var latlng2xyz = function (latlng) {
+						var __left0__ = latlng;
+						var lat = __left0__ [0];
+						var lng = __left0__ [1];
+						var z = sin (lat);
+						var x = cos (lat) * cos (lng);
+						var y = cos (lat) * sin (lng);
+						return tuple ([x, y, z]);
+					};
+					var sphere_angle = function (latlng1, latlng2) {
+						var __left0__ = latlng2xyz (latlng1);
+						var x1 = __left0__ [0];
+						var y1 = __left0__ [1];
+						var z1 = __left0__ [2];
+						var __left0__ = latlng2xyz (latlng2);
+						var x2 = __left0__ [0];
+						var y2 = __left0__ [1];
+						var z2 = __left0__ [2];
+						return 2 * asin (Math.pow ((Math.pow (x2 - x1, 2) + Math.pow (y2 - y1, 2)) + Math.pow (z2 - z1, 2), 0.5) / 2);
+					};
+					var projectionXYZ = function (xyz) {
+						var __left0__ = xyz;
+						var x1 = __left0__ [0];
+						var y1 = __left0__ [1];
+						var z1 = __left0__ [2];
+						var __left0__ = tuple ([0, 0, -(1)]);
+						var x0 = __left0__ [0];
+						var y0 = __left0__ [1];
+						var z0 = __left0__ [2];
+						var z2 = 1;
+						var k = (z2 - z0) / (z1 - z0);
+						var x2 = x0 + k * (x1 - x0);
+						var y2 = y0 + k * (y1 - y0);
+						return tuple ([x2, y2]);
+					};
+					var projectionLatlng = function (latlng) {
+						return projectionXYZ (latlng2xyz (latlng));
+					};
+					var bisect = function (func, x0, x1) {
+						var y0 = func (x0);
+						var y1 = func (x1);
+						if (y0 * y1 > 0) {
+							var __except0__ = Exception ('func(x0) and func(x1) must have different signs.');
+							__except0__.__cause__ = null;
+							throw __except0__;
+						}
+						while (abs (x1 - x0) > 1e-10) {
+							var x01 = (x0 + x1) / 2;
+							var y01 = func (x01);
+							if (y01 * y0 <= 0) {
+								var x1 = x01;
+								var y1 = y01;
+							}
+							else {
+								var x0 = x01;
+								var y0 = y01;
+							}
+						}
+						return tuple ([x01, y01]);
+					};
+					var add_vector = function () {
+						var vecs = tuple ([].slice.apply (arguments).slice (0));
+						return tuple ([sum ((function () {
+							var __accu0__ = [];
+							for (var e of vecs) {
+								__accu0__.append (e [0]);
+							}
+							return __accu0__;
+						}) ()), sum ((function () {
+							var __accu0__ = [];
+							for (var e of vecs) {
+								__accu0__.append (e [1]);
+							}
+							return __accu0__;
+						}) ()), sum ((function () {
+							var __accu0__ = [];
+							for (var e of vecs) {
+								__accu0__.append (e [2]);
+							}
+							return __accu0__;
+						}) ())]);
+					};
+					var zoom_vector = function (xyz, k) {
+						return tuple ([xyz [0] * k, xyz [1] * k, xyz [2] * k]);
+					};
+					var cross_product = function (xyz1, xyz2) {
+						var __left0__ = xyz1;
+						var x1 = __left0__ [0];
+						var y1 = __left0__ [1];
+						var z1 = __left0__ [2];
+						var __left0__ = xyz2;
+						var x2 = __left0__ [0];
+						var y2 = __left0__ [1];
+						var z2 = __left0__ [2];
+						return tuple ([y1 * z2 - y2 * z1, -(x1 * z2 - z1 * x2), x1 * y2 - x2 * y1]);
+					};
+					var linspace = function (x0, x1, n) {
+						var ret = list ([]);
+						var t = x0;
+						var d = (x1 - x0) / (n - 1);
+						for (var i = 0; i < n; i++) {
+							ret.append (t);
+							t += d;
+						}
+						return ret;
+					};
+					var circle_parametric = function (vector1, vector2, angle) {
+						var cosangle = cos (angle);
+						var sinangle = sin (angle);
+						return tuple ([vector1 [0] * cosangle + vector2 [0] * sinangle, vector1 [1] * cosangle + vector2 [1] * sinangle, vector1 [2] * cosangle + vector2 [2] * sinangle]);
+					};
+					__pragma__ ('<use>' +
+						'math' +
+					'</use>')
+					__pragma__ ('<all>')
+						__all__.__name__ = __name__;
+						__all__.acos = acos;
+						__all__.add_vector = add_vector;
+						__all__.asin = asin;
+						__all__.bisect = bisect;
+						__all__.circle_parametric = circle_parametric;
+						__all__.cos = cos;
+						__all__.cross_product = cross_product;
+						__all__.latlng2xyz = latlng2xyz;
+						__all__.linspace = linspace;
+						__all__.pi = pi;
+						__all__.projectionLatlng = projectionLatlng;
+						__all__.projectionXYZ = projectionXYZ;
+						__all__.sin = sin;
+						__all__.sphere_angle = sphere_angle;
+						__all__.zoom_vector = zoom_vector;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+	__nest__ (
+		__all__,
 		'stardata', {
 			__all__: {
 				__inited__: false,
@@ -2451,117 +2599,17 @@ function __init__ () {
 		var __name__ = __init__ (__world__.constants).__name__;
 		var pi = __init__ (__world__.constants).pi;
 		var SVG = __init__ (__world__.svg).SVG;
-		var latlng2xyz = function (latlng) {
-			var __left0__ = latlng;
-			var lat = __left0__ [0];
-			var lng = __left0__ [1];
-			var z = sin (lat);
-			var x = cos (lat) * cos (lng);
-			var y = cos (lat) * sin (lng);
-			return tuple ([x, y, z]);
-		};
-		var sphere_angle = function (latlng1, latlng2) {
-			var __left0__ = latlng2xyz (latlng1);
-			var x1 = __left0__ [0];
-			var y1 = __left0__ [1];
-			var z1 = __left0__ [2];
-			var __left0__ = latlng2xyz (latlng2);
-			var x2 = __left0__ [0];
-			var y2 = __left0__ [1];
-			var z2 = __left0__ [2];
-			return 2 * asin (Math.pow ((Math.pow (x2 - x1, 2) + Math.pow (y2 - y1, 2)) + Math.pow (z2 - z1, 2), 0.5) / 2);
-		};
-		var projectionXYZ = function (xyz) {
-			var __left0__ = xyz;
-			var x1 = __left0__ [0];
-			var y1 = __left0__ [1];
-			var z1 = __left0__ [2];
-			var __left0__ = tuple ([0, 0, -(1)]);
-			var x0 = __left0__ [0];
-			var y0 = __left0__ [1];
-			var z0 = __left0__ [2];
-			var z2 = 1;
-			var k = (z2 - z0) / (z1 - z0);
-			var x2 = x0 + k * (x1 - x0);
-			var y2 = y0 + k * (y1 - y0);
-			return tuple ([x2, y2]);
-		};
-		var projectionLatlng = function (latlng) {
-			return projectionXYZ (latlng2xyz (latlng));
-		};
-		var bisect = function (func, x0, x1) {
-			var y0 = func (x0);
-			var y1 = func (x1);
-			if (y0 * y1 > 0) {
-				var __except0__ = Exception ('func(x0) and func(x1) must have different signs.');
-				__except0__.__cause__ = null;
-				throw __except0__;
-			}
-			while (abs (x1 - x0) > 1e-10) {
-				var x01 = (x0 + x1) / 2;
-				var y01 = func (x01);
-				if (y01 * y0 <= 0) {
-					var x1 = x01;
-					var y1 = y01;
-				}
-				else {
-					var x0 = x01;
-					var y0 = y01;
-				}
-			}
-			return tuple ([x01, y01]);
-		};
-		var add_vector = function () {
-			var vecs = tuple ([].slice.apply (arguments).slice (0));
-			return tuple ([sum ((function () {
-				var __accu0__ = [];
-				for (var e of vecs) {
-					__accu0__.append (e [0]);
-				}
-				return __accu0__;
-			}) ()), sum ((function () {
-				var __accu0__ = [];
-				for (var e of vecs) {
-					__accu0__.append (e [1]);
-				}
-				return __accu0__;
-			}) ()), sum ((function () {
-				var __accu0__ = [];
-				for (var e of vecs) {
-					__accu0__.append (e [2]);
-				}
-				return __accu0__;
-			}) ())]);
-		};
-		var zoom_vector = function (xyz, k) {
-			return tuple ([xyz [0] * k, xyz [1] * k, xyz [2] * k]);
-		};
-		var cross_product = function (xyz1, xyz2) {
-			var __left0__ = xyz1;
-			var x1 = __left0__ [0];
-			var y1 = __left0__ [1];
-			var z1 = __left0__ [2];
-			var __left0__ = xyz2;
-			var x2 = __left0__ [0];
-			var y2 = __left0__ [1];
-			var z2 = __left0__ [2];
-			return tuple ([y1 * z2 - y2 * z1, -(x1 * z2 - z1 * x2), x1 * y2 - x2 * y1]);
-		};
-		var linspace = function (x0, x1, n) {
-			var ret = list ([]);
-			var t = x0;
-			var d = (x1 - x0) / (n - 1);
-			for (var i = 0; i < n; i++) {
-				ret.append (t);
-				t += d;
-			}
-			return ret;
-		};
-		var circle_parametric = function (vector1, vector2, angle) {
-			var cosangle = cos (angle);
-			var sinangle = sin (angle);
-			return tuple ([vector1 [0] * cosangle + vector2 [0] * sinangle, vector1 [1] * cosangle + vector2 [1] * sinangle, vector1 [2] * cosangle + vector2 [2] * sinangle]);
-		};
+		var __name__ = __init__ (__world__.mathfunc).__name__;
+		var add_vector = __init__ (__world__.mathfunc).add_vector;
+		var bisect = __init__ (__world__.mathfunc).bisect;
+		var circle_parametric = __init__ (__world__.mathfunc).circle_parametric;
+		var cross_product = __init__ (__world__.mathfunc).cross_product;
+		var latlng2xyz = __init__ (__world__.mathfunc).latlng2xyz;
+		var linspace = __init__ (__world__.mathfunc).linspace;
+		var projectionLatlng = __init__ (__world__.mathfunc).projectionLatlng;
+		var projectionXYZ = __init__ (__world__.mathfunc).projectionXYZ;
+		var sphere_angle = __init__ (__world__.mathfunc).sphere_angle;
+		var zoom_vector = __init__ (__world__.mathfunc).zoom_vector;
 		var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
 		var projected_r_max = __left0__ [0];
 		var _ = __left0__ [1];
@@ -2795,6 +2843,7 @@ function __init__ () {
 		__pragma__ ('<use>' +
 			'constants' +
 			'math' +
+			'mathfunc' +
 			'stardata' +
 			'svg' +
 		'</use>')
