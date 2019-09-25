@@ -1,6 +1,6 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-25 10:03:13
-function astrolabesvg () {
+// Transcrypt'ed from Python, 2019-09-25 21:10:32
+function __init__ () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
     var __world__ = __all__;
@@ -2224,6 +2224,38 @@ function astrolabesvg () {
     __all__.__setslice__ = __setslice__;
 	__nest__ (
 		__all__,
+		'constants', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'constants';
+					var pi = __init__ (__world__.math).pi;
+					var LATITUDE_OF_NORTHERN_TROPIC = (23.43673 / 180) * pi;
+					var LATITUDE_OF_SOUTHERN_TROPIC = (-(23.43673) / 180) * pi;
+					var DISK_EXTENSION = 0.25;
+					var DISK_TIMERING_THICKNESS = 0.2;
+					var SOLAR_TERMS = list (['立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至', '小寒', '大寒']);
+					var STARMARK_ADJUST = dict ({'50Alp UMa': tuple ([0, +(0.15)]), '85Eta UMa': tuple ([0, -(0.03)]), '77Eps UMa': tuple ([0, -(0.03)]), '32Alp Leo': tuple ([+(0.08), -(0.03)]), '58Alp Ori': tuple ([-(0.13), +(0.05)]), '24Gam Ori': tuple ([+(0.12), +(0.05)]), '19Bet Ori': tuple ([+(0.1), +(0.05)]), '46Eps Ori': tuple ([-(0.12), +(0.03)]), '16Alp Boo': tuple ([0, -(0.03)]), '3Alp Lyr': tuple ([0.13, -(0.03)]), '53Alp Aql': tuple ([-(0.13), +(0.02)]), '13Alp Aur': tuple ([+(0.13), +(0.18)]), '34Bet Aur': tuple ([-(0.22), 0]), '66Alp Gem': tuple ([-(0.22), +(0.1)]), '78Bet Gem': tuple ([-(0.2), +(0.06)]), '24Gam Gem': tuple ([+(0.14), +(0.05)]), '112Bet Tau': tuple ([-(0.18), +(0.07)]), '9Alp CMa': tuple ([+(0.02), +(0.1)]), '2Bet CMa': tuple ([+(0.04), +(0.01)]), '30Alp Hya': tuple ([+(0.05), 0])});
+					__pragma__ ('<use>' +
+						'math' +
+					'</use>')
+					__pragma__ ('<all>')
+						__all__.DISK_EXTENSION = DISK_EXTENSION;
+						__all__.DISK_TIMERING_THICKNESS = DISK_TIMERING_THICKNESS;
+						__all__.LATITUDE_OF_NORTHERN_TROPIC = LATITUDE_OF_NORTHERN_TROPIC;
+						__all__.LATITUDE_OF_SOUTHERN_TROPIC = LATITUDE_OF_SOUTHERN_TROPIC;
+						__all__.SOLAR_TERMS = SOLAR_TERMS;
+						__all__.STARMARK_ADJUST = STARMARK_ADJUST;
+						__all__.__name__ = __name__;
+						__all__.pi = pi;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+
+	__nest__ (
+		__all__,
 		'math', {
 			__all__: {
 				__inited__: false,
@@ -2332,6 +2364,76 @@ function astrolabesvg () {
 		}
 	);
 
+	__nest__ (
+		__all__,
+		'svg', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'svg';
+					var SVG = __class__ ('SVG', [object], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, ratio) {
+							if (typeof ratio == 'undefined' || (ratio != null && ratio .hasOwnProperty ("__kwargtrans__"))) {;
+								var ratio = 80;
+							};
+							self._entries = list ([]);
+							self.ratio = (function __lambda__ (f) {
+								return f * ratio;
+							});
+						});},
+						get _line () {return __get__ (this, function (self, x1, y1, x2, y2, className) {
+							self._entries.append ('\n            <line class="{}" x1="{}" x2="{}" y1="{}" y2="{}" stroke="black" fill="none" />\n        '.format (className, x1, x2, y1, y2));
+						});},
+						get line () {return __get__ (this, function (self, x1, y1, x2, y2, className) {
+							if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
+								var className = '';
+							};
+							self._line (self.ratio (x1), self.ratio (y1), self.ratio (x2), self.ratio (y2), __kwargtrans__ ({className: className}));
+						});},
+						get _circle () {return __get__ (this, function (self, x, y, radius, className) {
+							if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
+								var className = '';
+							};
+							self._entries.append ('\n            <circle class="{}" cx="{}" cy="{}" r="{}" stroke="black" stroke-width="1" fill="none" />\n        '.format (className, x, y, radius));
+						});},
+						get circle () {return __get__ (this, function (self, x, y, radius, className) {
+							if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
+								var className = '';
+							};
+							self._circle (self.ratio (x), self.ratio (y), self.ratio (radius), className);
+						});},
+						get polyline () {return __get__ (this, function (self, xyn, className) {
+							if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
+								var className = '';
+							};
+							var points = ' '.join ((function () {
+								var __accu0__ = [];
+								for (var [x, y] of xyn) {
+									__accu0__.append ('{},{}'.format (self.ratio (x), self.ratio (y)));
+								}
+								return __accu0__;
+							}) ());
+							self._entries.append ('<polyline class="{}" fill="none" stroke="black"\n            points="{}" />'.format (className, points));
+						});},
+						get _raw () {return __get__ (this, function (self, add) {
+							self._entries.append (add);
+						});},
+						get toString () {return __get__ (this, function (self) {
+							var size = 3.7;
+							var viewBox = '{} {} {} {}'.format (self.ratio (-(size)), self.ratio (-(size)), self.ratio (2 * size), self.ratio (2 * size));
+							return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="{}">\n            {}</svg>'.format (viewBox, '\n'.join (self._entries));
+						});}
+					});
+					__pragma__ ('<all>')
+						__all__.SVG = SVG;
+						__all__.__name__ = __name__;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+
 	(function () {
 		var __name__ = '__main__';
 		var sin = __init__ (__world__.math).sin;
@@ -2340,12 +2442,15 @@ function astrolabesvg () {
 		var acos = __init__ (__world__.math).acos;
 		var pi = __init__ (__world__.math).pi;
 		var CONSTELLATIONS = __init__ (__world__.stardata).CONSTELLATIONS;
-		var LATITUDE_OF_NORTHERN_TROPIC = (23.43673 / 180) * pi;
-		var LATITUDE_OF_SOUTHERN_TROPIC = (-(23.43673) / 180) * pi;
-		var DISK_EXTENSION = 0.25;
-		var DISK_TIMERING_THICKNESS = 0.2;
-		var SOLAR_TERMS = list (['立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至', '小寒', '大寒']);
-		var STARMARK_ADJUST = dict ({'50Alp UMa': tuple ([0, +(0.15)]), '85Eta UMa': tuple ([0, -(0.03)]), '77Eps UMa': tuple ([0, -(0.03)]), '32Alp Leo': tuple ([+(0.08), -(0.03)]), '58Alp Ori': tuple ([-(0.13), +(0.05)]), '24Gam Ori': tuple ([+(0.12), +(0.05)]), '19Bet Ori': tuple ([+(0.1), +(0.05)]), '46Eps Ori': tuple ([-(0.12), +(0.03)]), '16Alp Boo': tuple ([0, -(0.03)]), '3Alp Lyr': tuple ([0.13, -(0.03)]), '53Alp Aql': tuple ([-(0.13), +(0.02)]), '13Alp Aur': tuple ([+(0.13), +(0.18)]), '34Bet Aur': tuple ([-(0.22), 0]), '66Alp Gem': tuple ([-(0.22), +(0.1)]), '78Bet Gem': tuple ([-(0.2), +(0.06)]), '24Gam Gem': tuple ([+(0.14), +(0.05)]), '112Bet Tau': tuple ([-(0.18), +(0.07)]), '9Alp CMa': tuple ([+(0.02), +(0.1)]), '2Bet CMa': tuple ([+(0.04), +(0.01)]), '30Alp Hya': tuple ([+(0.05), 0])});
+		var DISK_EXTENSION = __init__ (__world__.constants).DISK_EXTENSION;
+		var DISK_TIMERING_THICKNESS = __init__ (__world__.constants).DISK_TIMERING_THICKNESS;
+		var LATITUDE_OF_NORTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_NORTHERN_TROPIC;
+		var LATITUDE_OF_SOUTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_SOUTHERN_TROPIC;
+		var SOLAR_TERMS = __init__ (__world__.constants).SOLAR_TERMS;
+		var STARMARK_ADJUST = __init__ (__world__.constants).STARMARK_ADJUST;
+		var __name__ = __init__ (__world__.constants).__name__;
+		var pi = __init__ (__world__.constants).pi;
+		var SVG = __init__ (__world__.svg).SVG;
 		var latlng2xyz = function (latlng) {
 			var __left0__ = latlng;
 			var lat = __left0__ [0];
@@ -2457,60 +2562,6 @@ function astrolabesvg () {
 			var sinangle = sin (angle);
 			return tuple ([vector1 [0] * cosangle + vector2 [0] * sinangle, vector1 [1] * cosangle + vector2 [1] * sinangle, vector1 [2] * cosangle + vector2 [2] * sinangle]);
 		};
-		var SVG = __class__ ('SVG', [object], {
-			__module__: __name__,
-			get __init__ () {return __get__ (this, function (self, ratio) {
-				if (typeof ratio == 'undefined' || (ratio != null && ratio .hasOwnProperty ("__kwargtrans__"))) {;
-					var ratio = 80;
-				};
-				self._entries = list ([]);
-				self.ratio = (function __lambda__ (f) {
-					return f * ratio;
-				});
-			});},
-			get _line () {return __get__ (this, function (self, x1, y1, x2, y2, className) {
-				self._entries.append ('\n            <line class="{}" x1="{}" x2="{}" y1="{}" y2="{}" stroke="black" fill="none" />\n        '.format (className, x1, x2, y1, y2));
-			});},
-			get line () {return __get__ (this, function (self, x1, y1, x2, y2, className) {
-				if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
-					var className = '';
-				};
-				self._line (self.ratio (x1), self.ratio (y1), self.ratio (x2), self.ratio (y2), __kwargtrans__ ({className: className}));
-			});},
-			get _circle () {return __get__ (this, function (self, x, y, radius, className) {
-				if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
-					var className = '';
-				};
-				self._entries.append ('\n            <circle class="{}" cx="{}" cy="{}" r="{}" stroke="black" stroke-width="1" fill="none" />\n        '.format (className, x, y, radius));
-			});},
-			get circle () {return __get__ (this, function (self, x, y, radius, className) {
-				if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
-					var className = '';
-				};
-				self._circle (self.ratio (x), self.ratio (y), self.ratio (radius), className);
-			});},
-			get polyline () {return __get__ (this, function (self, xyn, className) {
-				if (typeof className == 'undefined' || (className != null && className .hasOwnProperty ("__kwargtrans__"))) {;
-					var className = '';
-				};
-				var points = ' '.join ((function () {
-					var __accu0__ = [];
-					for (var [x, y] of xyn) {
-						__accu0__.append ('{},{}'.format (self.ratio (x), self.ratio (y)));
-					}
-					return __accu0__;
-				}) ());
-				self._entries.append ('<polyline class="{}" fill="none" stroke="black"\n            points="{}" />'.format (className, points));
-			});},
-			get _raw () {return __get__ (this, function (self, add) {
-				self._entries.append (add);
-			});},
-			get toString () {return __get__ (this, function (self) {
-				var size = 3.7;
-				var viewBox = '{} {} {} {}'.format (self.ratio (-(size)), self.ratio (-(size)), self.ratio (2 * size), self.ratio (2 * size));
-				return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="{}">\n            {}</svg>'.format (viewBox, '\n'.join (self._entries));
-			});}
-		});
 		var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
 		var projected_r_max = __left0__ [0];
 		var _ = __left0__ [1];
@@ -2742,8 +2793,10 @@ function astrolabesvg () {
 			return svg;
 		};
 		__pragma__ ('<use>' +
+			'constants' +
 			'math' +
 			'stardata' +
+			'svg' +
 		'</use>')
 		__pragma__ ('<all>')
 			__all__.CONSTELLATIONS = CONSTELLATIONS;
@@ -2782,5 +2835,6 @@ function astrolabesvg () {
 			__all__.zoom_vector = zoom_vector;
 		__pragma__ ('</all>')
 	}) ();
+
     return __all__;
 }

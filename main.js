@@ -5,7 +5,7 @@ var userCoordinate = {
     latitude: 40,
     longitude: 0,
 };
-const astrosvg = astrolabesvg();
+const astrosvg = __init__();
 
 var tympanTextTimeMode = 0; // 0-UTC 1-LOCALE 2-SIDEREAL(LOCAL)
 function switchTympanTextTimeMode(){

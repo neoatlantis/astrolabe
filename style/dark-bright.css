@@ -1,0 +1,28 @@
+body {
+    background: black;
+}
+svg line,circle,polyline{
+    stroke: #00FF00;
+}
+svg text{
+    fill: #00FF00;
+}
+
+.circle-ecliptic{
+    fill: none;
+}
+
+.tympan-text1:hover{
+    fill: #FFFF00;
+}
+.tympan-mesh{
+    opacity: 0.3;
+}
+.circle-equator,.circle-northern-tropic,.circle-southern-tropic{
+    opacity: 0.5;
+}
+
+.constellation-line{
+    stroke: #00FF00;
+    opacity: 0.8;
+}

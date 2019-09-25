@@ -1,4 +1,4 @@
 #!/bin/sh
 
-python3 -m transcrypt -np.user -e6 astrolabesvg.py
-cp __javascript__/astrolabesvg.js ./
+python3 -m transcrypt -np.user -e6 astrolabesvg/__init__.py
+cp astrolabesvg/__javascript__/__init__.js ./astrolabesvg.js
