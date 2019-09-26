@@ -37,6 +37,9 @@ class SVG:
     def _raw(self, add):
         self._entries.append(add)
 
+    def _toString(self):
+        return "\n".join(self._entries)
+
     def toString(self):
         size = 3.7
         viewBox = "{} {} {} {}".format(   
@@ -46,7 +49,4 @@ class SVG:
             self.ratio(2*size)
         )
         return """<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="{}">
-            {}</svg>""".format(
-                viewBox,
-                "\n".join(self._entries)
-            )
+            {}</svg>""".format( viewBox, self._toString())

@@ -6,6 +6,7 @@ var userCoordinate = {
     longitude: 0,
 };
 const astrosvg = __init__();
+const astrolabe = new astrosvg.Astrolabe();
 
 var tympanTextTimeMode = 0; // 0-UTC 1-LOCALE 2-SIDEREAL(LOCAL)
 function switchTympanTextTimeMode(){
@@ -27,15 +28,15 @@ function updateDisplay(params){
     //solarEclipticLng, siderealTime){
     $(".sun-arrow-1").attr(
         "transform",
-        "rotate(" + astrosvg.getSunArrow1Angle(params.solarEclipticLng) + ")"
+        "rotate(" + astrolabe.getSunArrow1Angle(params.solarEclipticLng) + ")"
     );
     $(".sun-arrow-2").attr(
         "transform",
-        "rotate(" + astrosvg.getSunArrow2Angle(params.solarEclipticLng) + ")"
+        "rotate(" + astrolabe.getSunArrow2Angle(params.solarEclipticLng) + ")"
     );
-    $("#rete").find("svg").attr(
+    $("svg").find(".rete").attr(
         "transform",
-        "rotate(" + astrosvg.getReteAngle(
+        "rotate(" + astrolabe.getReteAngle(
             params.solarEclipticLng,
             params.siderealTime
         ) + ")"
@@ -56,11 +57,11 @@ $(async function(){
     }
 
 
-    $(astrosvg.Tympan(userCoordinate.latitude / 180 * astrosvg.pi))
+    $(astrolabe.getSVG(userCoordinate.latitude / 180 * astrosvg.pi))
         .attr("transform", "rotate(-90)")
         .appendTo("div#tympan");
-    $(astrosvg.Rete())
-        .appendTo("div#rete");
+    /*    $(astrosvg.Rete())
+        .appendTo("div#rete");*/
     $(".tympan-text1").click(switchTympanTextTimeMode);
 
 

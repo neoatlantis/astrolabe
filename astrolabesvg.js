@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2019-09-25 21:49:42
+// Transcrypt'ed from Python, 2019-09-26 03:25:07
 function __init__ () {
     var __symbols__ = ['__py3.6__', '__esv6__'];
     var __all__ = {};
@@ -2498,6 +2498,231 @@ function __init__ () {
 
 	__nest__ (
 		__all__,
+		'rete', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'rete';
+					var sin = __init__ (__world__.math).sin;
+					var cos = __init__ (__world__.math).cos;
+					var asin = __init__ (__world__.math).asin;
+					var acos = __init__ (__world__.math).acos;
+					var pi = __init__ (__world__.math).pi;
+					var CONSTELLATIONS = __init__ (__world__.stardata).CONSTELLATIONS;
+					var DISK_EXTENSION = __init__ (__world__.constants).DISK_EXTENSION;
+					var DISK_TIMERING_THICKNESS = __init__ (__world__.constants).DISK_TIMERING_THICKNESS;
+					var LATITUDE_OF_NORTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_NORTHERN_TROPIC;
+					var LATITUDE_OF_SOUTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_SOUTHERN_TROPIC;
+					var SOLAR_TERMS = __init__ (__world__.constants).SOLAR_TERMS;
+					var STARMARK_ADJUST = __init__ (__world__.constants).STARMARK_ADJUST;
+					var __name__ = __init__ (__world__.constants).__name__;
+					var pi = __init__ (__world__.constants).pi;
+					var __name__ = __init__ (__world__.mathfunc).__name__;
+					var acos = __init__ (__world__.mathfunc).acos;
+					var add_vector = __init__ (__world__.mathfunc).add_vector;
+					var asin = __init__ (__world__.mathfunc).asin;
+					var bisect = __init__ (__world__.mathfunc).bisect;
+					var circle_parametric = __init__ (__world__.mathfunc).circle_parametric;
+					var cos = __init__ (__world__.mathfunc).cos;
+					var cross_product = __init__ (__world__.mathfunc).cross_product;
+					var latlng2xyz = __init__ (__world__.mathfunc).latlng2xyz;
+					var linspace = __init__ (__world__.mathfunc).linspace;
+					var pi = __init__ (__world__.mathfunc).pi;
+					var projectionLatlng = __init__ (__world__.mathfunc).projectionLatlng;
+					var projectionXYZ = __init__ (__world__.mathfunc).projectionXYZ;
+					var sin = __init__ (__world__.mathfunc).sin;
+					var sphere_angle = __init__ (__world__.mathfunc).sphere_angle;
+					var zoom_vector = __init__ (__world__.mathfunc).zoom_vector;
+					var SVG = __init__ (__world__.svg).SVG;
+					var Rete = function (self) {
+						var svg = SVG ();
+						var projected_r_max = self.projected_r_max;
+						var projected_r_in = self.projected_r_in;
+						var projected_ecliptic_center = (projected_r_max - projected_r_in) / 2;
+						var projected_ecliptic_radius = (projected_r_max + projected_r_in) / 2;
+						svg.circle (projected_ecliptic_center, 0, projected_ecliptic_radius, 'circle-ecliptic');
+						var getRFromEcliptic = function (theta) {
+							var a = 1;
+							var b = (-(2) * projected_ecliptic_center) * cos (theta);
+							var c = Math.pow (projected_ecliptic_center, 2) - Math.pow (projected_ecliptic_radius, 2);
+							var R = (-(b) + Math.pow (Math.pow (b, 2) - (4 * a) * c, 0.5)) / (2 * a);
+							return R;
+						};
+						for (var t = 0; t < 360; t += 5) {
+							var theta = (t / 180) * pi + (3 * pi) / 2;
+							var R = getRFromEcliptic (theta);
+							var endVector1 = tuple ([(R - 0.1) * cos (theta), (R - 0.1) * sin (theta)]);
+							if (t == 0) {
+								var endVector2 = tuple ([projected_r_max * cos (theta), projected_r_max * sin (theta)]);
+							}
+							else if (__mod__ (t, 15) == 0) {
+								var endVector2 = tuple ([(R + 0.1) * cos (theta), (R + 0.1) * sin (theta)]);
+							}
+							else {
+								var endVector2 = tuple ([R * cos (theta), R * sin (theta)]);
+							}
+							svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
+						}
+						var outerR1 = projected_r_max;
+						var outerR2 = outerR1 + DISK_EXTENSION;
+						var outerRM = (outerR1 + outerR2) / 2;
+						var outerRT = outerR1 + DISK_EXTENSION * 0.25;
+						var solarTermsIndex = 0;
+						for (var t = 0; t < 24; t++) {
+							var theta = ((pi / 12) * t + pi / 2) - (3 * pi) / 12;
+							var endVector1 = tuple ([outerR1 * cos (theta), outerR1 * sin (theta)]);
+							if (__mod__ (t, 2) == 1) {
+								var endVector2 = tuple ([outerR2 * cos (theta), outerR2 * sin (theta)]);
+							}
+							else {
+								var endVector2 = tuple ([outerRM * cos (theta), outerRM * sin (theta)]);
+							}
+							svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
+							var textAngle = 2 * pi - theta;
+							svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="2.5em">{}</text>\n        '.format (svg.ratio (outerRT * cos (textAngle)), svg.ratio (outerRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, SOLAR_TERMS [t]));
+						}
+						var theta = (3 * pi) / 2;
+						var R = getRFromEcliptic (theta);
+						svg._raw ('\n    <g transform="translate({} 0)">\n\n    <g class="sun-arrow-1">\n    <circle cx="0" cy="0" r="{}" stroke-width="10" visibility="visible" opacity="0.4" fill="none"/>\n    <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n    <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n\n    </g>\n\n    <g class="sun-arrow-2">\n        <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n        <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n    '.format (svg.ratio (projected_ecliptic_center), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_r_max + DISK_EXTENSION), svg.ratio (projected_r_max + DISK_EXTENSION)));
+						drawStars (svg);
+						return svg;
+					};
+					var drawStars = function (reteSVG) {
+						var svg = reteSVG;
+						var drawnStars = list ([]);
+						var drawStar = function (star) {
+							var starRA = ((star ['RA'] * 15) / 180) * pi;
+							var starDE = (star ['DE'] / 180) * pi;
+							if (__in__ (star ['name'], drawnStars)) {
+								return ;
+							}
+							if (starDE < LATITUDE_OF_SOUTHERN_TROPIC) {
+								return ;
+							}
+							var projectRA = (pi * 3) / 2 - starRA;
+							var point = projectionLatlng (tuple ([starDE, projectRA]));
+							var Vmag = star ['Vmag'];
+							if (Vmag <= 0) {
+								var size = 0.04;
+							}
+							else if (Vmag <= 1) {
+								var size = 0.03;
+							}
+							else if (Vmag <= 2) {
+								var size = 0.02;
+							}
+							else if (Vmag < 3) {
+								var size = 0.01;
+							}
+							else {
+								return ;
+							}
+							svg.circle (point [0], point [1], size, 'star');
+							if (star ['mark']) {
+								var deltaRA = 0;
+								var deltaDE = -(0.03);
+								if (__in__ (star ['name'], STARMARK_ADJUST)) {
+									deltaRA += STARMARK_ADJUST [star ['name']] [0];
+									deltaDE += STARMARK_ADJUST [star ['name']] [1];
+								}
+								var pointText = projectionLatlng (tuple ([starDE + deltaDE, projectRA + deltaRA]));
+								var starname = star ['mark'] [0];
+								svg._raw ('<text\n                transform="translate({},{}) rotate({})"\n                class="starname"\n                text-anchor="middle">{}</text>'.format (svg.ratio (pointText [0]), svg.ratio (pointText [1]), (((projectRA + deltaRA) + pi / 2) / pi) * 180, starname));
+								print (starname, star ['name']);
+							}
+							drawnStars.append (star ['name']);
+						};
+						var drawLine = function (star0, star1) {
+							var n = 10;
+							var ra0 = ((star0 ['RA'] * 15) / 180) * pi;
+							var dec0 = (star0 ['DE'] / 180) * pi;
+							var ra1 = ((star1 ['RA'] * 15) / 180) * pi;
+							var dec1 = (star1 ['DE'] / 180) * pi;
+							if (ra0 > ra1) {
+								var t = dec1;
+								var dec1 = dec0;
+								var dec0 = t;
+								var t = ra1;
+								var ra1 = ra0;
+								var ra0 = t;
+							}
+							if (ra1 - ra0 > pi) {
+								ra0 += 2 * pi;
+								var t = dec1;
+								var dec1 = dec0;
+								var dec0 = t;
+								var t = ra1;
+								var ra1 = ra0;
+								var ra0 = t;
+							}
+							var ra_n = linspace (ra0, ra1, n);
+							var dec_n = linspace (dec0, dec1, n);
+							var points = list ([]);
+							for (var i = 0; i < n; i++) {
+								var __left0__ = tuple ([ra_n [i], dec_n [i]]);
+								var ra_i = __left0__ [0];
+								var dec_i = __left0__ [1];
+								if (dec_i < LATITUDE_OF_SOUTHERN_TROPIC) {
+									continue;
+								}
+								var point = projectionLatlng (tuple ([dec_i, (2 * pi - ra_i) + (pi * 3) / 2]));
+								points.append (point);
+							}
+							svg.polyline (points, 'constellation-line');
+						};
+						for (var constellation of CONSTELLATIONS) {
+							for (var line of constellation ['lines']) {
+								for (var i = 0; i < len (line) - 1; i++) {
+									drawStar (line [i]);
+									drawLine (line [i], line [i + 1]);
+									drawStar (line [i + 1]);
+								}
+							}
+						}
+						return svg;
+					};
+					__pragma__ ('<use>' +
+						'constants' +
+						'math' +
+						'mathfunc' +
+						'stardata' +
+						'svg' +
+					'</use>')
+					__pragma__ ('<all>')
+						__all__.CONSTELLATIONS = CONSTELLATIONS;
+						__all__.DISK_EXTENSION = DISK_EXTENSION;
+						__all__.DISK_TIMERING_THICKNESS = DISK_TIMERING_THICKNESS;
+						__all__.LATITUDE_OF_NORTHERN_TROPIC = LATITUDE_OF_NORTHERN_TROPIC;
+						__all__.LATITUDE_OF_SOUTHERN_TROPIC = LATITUDE_OF_SOUTHERN_TROPIC;
+						__all__.Rete = Rete;
+						__all__.SOLAR_TERMS = SOLAR_TERMS;
+						__all__.STARMARK_ADJUST = STARMARK_ADJUST;
+						__all__.SVG = SVG;
+						__all__.__name__ = __name__;
+						__all__.acos = acos;
+						__all__.add_vector = add_vector;
+						__all__.asin = asin;
+						__all__.bisect = bisect;
+						__all__.circle_parametric = circle_parametric;
+						__all__.cos = cos;
+						__all__.cross_product = cross_product;
+						__all__.drawStars = drawStars;
+						__all__.latlng2xyz = latlng2xyz;
+						__all__.linspace = linspace;
+						__all__.pi = pi;
+						__all__.projectionLatlng = projectionLatlng;
+						__all__.projectionXYZ = projectionXYZ;
+						__all__.sin = sin;
+						__all__.sphere_angle = sphere_angle;
+						__all__.zoom_vector = zoom_vector;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+
+	__nest__ (
+		__all__,
 		'stardata', {
 			__all__: {
 				__inited__: false,
@@ -2568,15 +2793,156 @@ function __init__ () {
 						get _raw () {return __get__ (this, function (self, add) {
 							self._entries.append (add);
 						});},
+						get _toString () {return __get__ (this, function (self) {
+							return '\n'.join (self._entries);
+						});},
 						get toString () {return __get__ (this, function (self) {
 							var size = 3.7;
 							var viewBox = '{} {} {} {}'.format (self.ratio (-(size)), self.ratio (-(size)), self.ratio (2 * size), self.ratio (2 * size));
-							return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="{}">\n            {}</svg>'.format (viewBox, '\n'.join (self._entries));
+							return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="{}">\n            {}</svg>'.format (viewBox, self._toString ());
 						});}
 					});
 					__pragma__ ('<all>')
 						__all__.SVG = SVG;
 						__all__.__name__ = __name__;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+
+	__nest__ (
+		__all__,
+		'tympan', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'tympan';
+					var sin = __init__ (__world__.math).sin;
+					var cos = __init__ (__world__.math).cos;
+					var asin = __init__ (__world__.math).asin;
+					var acos = __init__ (__world__.math).acos;
+					var pi = __init__ (__world__.math).pi;
+					var DISK_EXTENSION = __init__ (__world__.constants).DISK_EXTENSION;
+					var DISK_TIMERING_THICKNESS = __init__ (__world__.constants).DISK_TIMERING_THICKNESS;
+					var LATITUDE_OF_NORTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_NORTHERN_TROPIC;
+					var LATITUDE_OF_SOUTHERN_TROPIC = __init__ (__world__.constants).LATITUDE_OF_SOUTHERN_TROPIC;
+					var SOLAR_TERMS = __init__ (__world__.constants).SOLAR_TERMS;
+					var STARMARK_ADJUST = __init__ (__world__.constants).STARMARK_ADJUST;
+					var __name__ = __init__ (__world__.constants).__name__;
+					var pi = __init__ (__world__.constants).pi;
+					var __name__ = __init__ (__world__.mathfunc).__name__;
+					var acos = __init__ (__world__.mathfunc).acos;
+					var add_vector = __init__ (__world__.mathfunc).add_vector;
+					var asin = __init__ (__world__.mathfunc).asin;
+					var bisect = __init__ (__world__.mathfunc).bisect;
+					var circle_parametric = __init__ (__world__.mathfunc).circle_parametric;
+					var cos = __init__ (__world__.mathfunc).cos;
+					var cross_product = __init__ (__world__.mathfunc).cross_product;
+					var latlng2xyz = __init__ (__world__.mathfunc).latlng2xyz;
+					var linspace = __init__ (__world__.mathfunc).linspace;
+					var pi = __init__ (__world__.mathfunc).pi;
+					var projectionLatlng = __init__ (__world__.mathfunc).projectionLatlng;
+					var projectionXYZ = __init__ (__world__.mathfunc).projectionXYZ;
+					var sin = __init__ (__world__.mathfunc).sin;
+					var sphere_angle = __init__ (__world__.mathfunc).sphere_angle;
+					var zoom_vector = __init__ (__world__.mathfunc).zoom_vector;
+					var SVG = __init__ (__world__.svg).SVG;
+					var Tympan = function (self, latitude) {
+						var svg = SVG ();
+						var projected_r_max = self.projected_r_max;
+						var projected_r_in = self.projected_r_in;
+						var zenith = tuple ([latitude, 0.0]);
+						var zenithVec1 = latlng2xyz (zenith);
+						var equatorVec2 = tuple ([0, 1.0, 0]);
+						var azinorthVec3 = cross_product (zenithVec1, equatorVec2);
+						var __left0__ = latlng2xyz (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
+						var x_of_southern_tropic = __left0__ [0];
+						var y_of_southern_tropic = __left0__ [1];
+						var z_of_southern_tropic = __left0__ [2];
+						var projected_equator = projectionLatlng (tuple ([0, 0]));
+						svg.circle (0, 0, projected_equator [0], 'circle-equator');
+						svg.circle (0, 0, projected_r_max, 'circle-southern-tropic');
+						svg.circle (0, 0, projected_r_in, 'circle-northern-tropic');
+						for (var altitudeDeg of list ([0, 10, 20, 30, 40, 50, 60, 70, 80, -(18), -(12), -(6)])) {
+							var altitude = (altitudeDeg / 180.0) * pi;
+							var R = cos (altitude);
+							var __left0__ = tuple ([zoom_vector (equatorVec2, R), zoom_vector (azinorthVec3, R)]);
+							var v1 = __left0__ [0];
+							var v2 = __left0__ [1];
+							var v3 = zoom_vector (zenithVec1, sin (altitude));
+							var svgPoints = list ([]);
+							for (var theta of linspace (-(pi) / 2, (pi * 3) / 2, 360)) {
+								var pointXYZ = add_vector (circle_parametric (v1, v2, theta), v3);
+								if (pointXYZ [2] < z_of_southern_tropic) {
+									continue;
+								}
+								var projectedXYZ = projectionXYZ (pointXYZ);
+								svgPoints.append (projectedXYZ);
+							}
+							svg.polyline (svgPoints, 'tympan-mesh');
+						}
+						for (var azimuthDeg = 0; azimuthDeg < 360; azimuthDeg += 10) {
+							var theta = ((90 - azimuthDeg) / 180) * pi;
+							var azimuthVec = circle_parametric (equatorVec2, azinorthVec3, theta);
+							var svgPoints = list ([]);
+							for (var altitude of linspace (0, pi, 360)) {
+								var pointXYZ = circle_parametric (azimuthVec, zenithVec1, altitude);
+								if (pointXYZ [2] < z_of_southern_tropic) {
+									continue;
+								}
+								var projectedXYZ = projectionXYZ (pointXYZ);
+								svgPoints.append (projectedXYZ);
+							}
+							svg.polyline (svgPoints, 'tympan-mesh');
+						}
+						var drawR1 = projected_r_max + DISK_EXTENSION;
+						var drawR2 = drawR1 + DISK_TIMERING_THICKNESS;
+						var drawRT = drawR1 + DISK_TIMERING_THICKNESS * 0.25;
+						svg.circle (0, 0, drawR1);
+						svg.circle (0, 0, drawR2);
+						for (var i = 0; i < 24; i++) {
+							var theta = ((i * 15) / 180) * pi;
+							var endVector1 = tuple ([drawR1 * cos (theta), drawR1 * sin (theta)]);
+							var endVector2 = tuple ([drawR2 * cos (theta), drawR2 * sin (theta)]);
+							svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
+							var textAngle = (theta + pi) + pi / 24;
+							svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="1.5em">{}</text>\n        '.format (svg.ratio (drawRT * cos (textAngle)), svg.ratio (drawRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, i));
+						}
+						svg._raw ('\n        <text x="0" y="{}" transform="rotate(90)" text-anchor="middle">\n            <tspan class="tympan-text1" x="0" dy="1.2em"></tspan>\n            <tspan class="tympan-text2" x="0" dy="1.2em"></tspan>\n        </text>\n    '.format (svg.ratio (2.2)));
+						return svg;
+					};
+					__pragma__ ('<use>' +
+						'constants' +
+						'math' +
+						'mathfunc' +
+						'svg' +
+					'</use>')
+					__pragma__ ('<all>')
+						__all__.DISK_EXTENSION = DISK_EXTENSION;
+						__all__.DISK_TIMERING_THICKNESS = DISK_TIMERING_THICKNESS;
+						__all__.LATITUDE_OF_NORTHERN_TROPIC = LATITUDE_OF_NORTHERN_TROPIC;
+						__all__.LATITUDE_OF_SOUTHERN_TROPIC = LATITUDE_OF_SOUTHERN_TROPIC;
+						__all__.SOLAR_TERMS = SOLAR_TERMS;
+						__all__.STARMARK_ADJUST = STARMARK_ADJUST;
+						__all__.SVG = SVG;
+						__all__.Tympan = Tympan;
+						__all__.__name__ = __name__;
+						__all__.acos = acos;
+						__all__.add_vector = add_vector;
+						__all__.asin = asin;
+						__all__.bisect = bisect;
+						__all__.circle_parametric = circle_parametric;
+						__all__.cos = cos;
+						__all__.cross_product = cross_product;
+						__all__.latlng2xyz = latlng2xyz;
+						__all__.linspace = linspace;
+						__all__.pi = pi;
+						__all__.projectionLatlng = projectionLatlng;
+						__all__.projectionXYZ = projectionXYZ;
+						__all__.sin = sin;
+						__all__.sphere_angle = sphere_angle;
+						__all__.zoom_vector = zoom_vector;
 					__pragma__ ('</all>')
 				}
 			}
@@ -2616,249 +2982,64 @@ function __init__ () {
 		var sin = __init__ (__world__.mathfunc).sin;
 		var sphere_angle = __init__ (__world__.mathfunc).sphere_angle;
 		var zoom_vector = __init__ (__world__.mathfunc).zoom_vector;
-		var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
-		var projected_r_max = __left0__ [0];
-		var _ = __left0__ [1];
-		var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_NORTHERN_TROPIC, 0]));
-		var projected_r_in = __left0__ [0];
-		var __ = __left0__ [1];
-		var Tympan = function (latitude) {
-			var svg = SVG ();
-			var zenith = tuple ([latitude, 0.0]);
-			var zenithVec1 = latlng2xyz (zenith);
-			var equatorVec2 = tuple ([0, 1.0, 0]);
-			var azinorthVec3 = cross_product (zenithVec1, equatorVec2);
-			var __left0__ = latlng2xyz (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
-			var x_of_southern_tropic = __left0__ [0];
-			var y_of_southern_tropic = __left0__ [1];
-			var z_of_southern_tropic = __left0__ [2];
-			var projected_equator = projectionLatlng (tuple ([0, 0]));
-			svg.circle (0, 0, projected_equator [0], 'circle-equator');
-			svg.circle (0, 0, projected_r_max, 'circle-southern-tropic');
-			svg.circle (0, 0, projected_r_in, 'circle-northern-tropic');
-			for (var altitudeDeg of list ([0, 10, 20, 30, 40, 50, 60, 70, 80, -(18), -(12), -(6)])) {
-				var altitude = (altitudeDeg / 180.0) * pi;
-				var R = cos (altitude);
-				var __left0__ = tuple ([zoom_vector (equatorVec2, R), zoom_vector (azinorthVec3, R)]);
-				var v1 = __left0__ [0];
-				var v2 = __left0__ [1];
-				var v3 = zoom_vector (zenithVec1, sin (altitude));
-				var svgPoints = list ([]);
-				for (var theta of linspace (-(pi) / 2, (pi * 3) / 2, 360)) {
-					var pointXYZ = add_vector (circle_parametric (v1, v2, theta), v3);
-					if (pointXYZ [2] < z_of_southern_tropic) {
-						continue;
-					}
-					var projectedXYZ = projectionXYZ (pointXYZ);
-					svgPoints.append (projectedXYZ);
-				}
-				svg.polyline (svgPoints, 'tympan-mesh');
-			}
-			for (var azimuthDeg = 0; azimuthDeg < 360; azimuthDeg += 10) {
-				var theta = ((90 - azimuthDeg) / 180) * pi;
-				var azimuthVec = circle_parametric (equatorVec2, azinorthVec3, theta);
-				var svgPoints = list ([]);
-				for (var altitude of linspace (0, pi, 360)) {
-					var pointXYZ = circle_parametric (azimuthVec, zenithVec1, altitude);
-					if (pointXYZ [2] < z_of_southern_tropic) {
-						continue;
-					}
-					var projectedXYZ = projectionXYZ (pointXYZ);
-					svgPoints.append (projectedXYZ);
-				}
-				svg.polyline (svgPoints, 'tympan-mesh');
-			}
-			var drawR1 = projected_r_max + DISK_EXTENSION;
-			var drawR2 = drawR1 + DISK_TIMERING_THICKNESS;
-			var drawRT = drawR1 + DISK_TIMERING_THICKNESS * 0.25;
-			svg.circle (0, 0, drawR1);
-			svg.circle (0, 0, drawR2);
-			for (var i = 0; i < 24; i++) {
-				var theta = ((i * 15) / 180) * pi;
-				var endVector1 = tuple ([drawR1 * cos (theta), drawR1 * sin (theta)]);
-				var endVector2 = tuple ([drawR2 * cos (theta), drawR2 * sin (theta)]);
-				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
-				var textAngle = (theta + pi) + pi / 24;
-				svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="1.5em">{}</text>\n        '.format (svg.ratio (drawRT * cos (textAngle)), svg.ratio (drawRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, i));
-			}
-			svg._raw ('\n        <text x="0" y="{}" transform="rotate(90)" text-anchor="middle">\n            <tspan class="tympan-text1" x="0" dy="1.2em"></tspan>\n            <tspan class="tympan-text2" x="0" dy="1.2em"></tspan>\n        </text>\n    '.format (svg.ratio (2.2)));
-			return svg.toString ();
-		};
-		var getSunArrow1Angle = function (solarEclipticLongitudeInDegrees) {
-			var projected_ecliptic_center = (projected_r_max - projected_r_in) / 2;
-			var projected_ecliptic_radius = (projected_r_max + projected_r_in) / 2;
-			var getRFromEcliptic = function (theta) {
-				var a = 1;
-				var b = (-(2) * projected_ecliptic_center) * cos (theta);
-				var c = Math.pow (projected_ecliptic_center, 2) - Math.pow (projected_ecliptic_radius, 2);
-				var R = (-(b) + Math.pow (Math.pow (b, 2) - (4 * a) * c, 0.5)) / (2 * a);
-				return R;
-			};
-			var ecllng = (solarEclipticLongitudeInDegrees / 180) * pi + pi / 2;
-			var R = getRFromEcliptic (ecllng);
-			var angle1 = asin ((projected_ecliptic_center * sin (ecllng)) / projected_ecliptic_radius);
-			var retAngle = angle1 + ecllng;
-			return 90 - (retAngle / pi) * 180.0;
-		};
-		var getSunArrow2Angle = function (solarEclipticLongitudeInDegrees) {
-			return -(solarEclipticLongitudeInDegrees);
-		};
-		var getReteAngle = function (solarEclipticLongitudeInDegrees, siderealTimeIn24Hours) {
-			return (siderealTimeIn24Hours * 15 + solarEclipticLongitudeInDegrees) + 180;
-		};
-		var Rete = function () {
-			var svg = SVG ();
-			var projected_ecliptic_center = (projected_r_max - projected_r_in) / 2;
-			var projected_ecliptic_radius = (projected_r_max + projected_r_in) / 2;
-			svg.circle (projected_ecliptic_center, 0, projected_ecliptic_radius, 'circle-ecliptic');
-			var getRFromEcliptic = function (theta) {
-				var a = 1;
-				var b = (-(2) * projected_ecliptic_center) * cos (theta);
-				var c = Math.pow (projected_ecliptic_center, 2) - Math.pow (projected_ecliptic_radius, 2);
-				var R = (-(b) + Math.pow (Math.pow (b, 2) - (4 * a) * c, 0.5)) / (2 * a);
-				return R;
-			};
-			for (var t = 0; t < 360; t += 5) {
-				var theta = (t / 180) * pi + (3 * pi) / 2;
-				var R = getRFromEcliptic (theta);
-				var endVector1 = tuple ([(R - 0.1) * cos (theta), (R - 0.1) * sin (theta)]);
-				if (t == 0) {
-					var endVector2 = tuple ([projected_r_max * cos (theta), projected_r_max * sin (theta)]);
-				}
-				else if (__mod__ (t, 15) == 0) {
-					var endVector2 = tuple ([(R + 0.1) * cos (theta), (R + 0.1) * sin (theta)]);
-				}
-				else {
-					var endVector2 = tuple ([R * cos (theta), R * sin (theta)]);
-				}
-				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
-			}
-			var outerR1 = projected_r_max;
-			var outerR2 = outerR1 + DISK_EXTENSION;
-			var outerRM = (outerR1 + outerR2) / 2;
-			var outerRT = outerR1 + DISK_EXTENSION * 0.25;
-			var solarTermsIndex = 0;
-			for (var t = 0; t < 24; t++) {
-				var theta = ((pi / 12) * t + pi / 2) - (3 * pi) / 12;
-				var endVector1 = tuple ([outerR1 * cos (theta), outerR1 * sin (theta)]);
-				if (__mod__ (t, 2) == 1) {
-					var endVector2 = tuple ([outerR2 * cos (theta), outerR2 * sin (theta)]);
-				}
-				else {
-					var endVector2 = tuple ([outerRM * cos (theta), outerRM * sin (theta)]);
-				}
-				svg.line (endVector1 [0], endVector1 [1], endVector2 [0], endVector2 [1]);
-				var textAngle = 2 * pi - theta;
-				svg._raw ('\n            <text transform="translate({},{}) rotate({})" text-anchor="middle" textLength="2.5em">{}</text>\n        '.format (svg.ratio (outerRT * cos (textAngle)), svg.ratio (outerRT * sin (textAngle)), ((textAngle + pi / 2) / pi) * 180, SOLAR_TERMS [t]));
-			}
-			var theta = (3 * pi) / 2;
-			var R = getRFromEcliptic (theta);
-			svg._raw ('\n    <g transform="translate({} 0)">\n\n    <g class="sun-arrow-1">\n    <circle cx="0" cy="0" r="{}" stroke-width="10" visibility="visible" opacity="0.4" fill="none"/>\n    <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n    <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n\n    </g>\n\n    <g class="sun-arrow-2">\n        <circle cx="0" cy="-{}" r="5" stroke-width="0" fill="red" />\n        <circle cx="0" cy="-{}" r="9" stroke-width="1" fill="none" />\n    </g>\n    '.format (svg.ratio (projected_ecliptic_center), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_ecliptic_radius), svg.ratio (projected_r_max + DISK_EXTENSION), svg.ratio (projected_r_max + DISK_EXTENSION)));
-			drawStars (svg);
-			return svg.toString ();
-		};
-		var drawStars = function (reteSVG) {
-			var svg = reteSVG;
-			var drawnStars = list ([]);
-			var drawStar = function (star) {
-				var starRA = ((star ['RA'] * 15) / 180) * pi;
-				var starDE = (star ['DE'] / 180) * pi;
-				if (__in__ (star ['name'], drawnStars)) {
-					return ;
-				}
-				if (starDE < LATITUDE_OF_SOUTHERN_TROPIC) {
-					return ;
-				}
-				var projectRA = (pi * 3) / 2 - starRA;
-				var point = projectionLatlng (tuple ([starDE, projectRA]));
-				var Vmag = star ['Vmag'];
-				if (Vmag <= 0) {
-					var size = 0.04;
-				}
-				else if (Vmag <= 1) {
-					var size = 0.03;
-				}
-				else if (Vmag <= 2) {
-					var size = 0.02;
-				}
-				else if (Vmag < 3) {
-					var size = 0.01;
-				}
-				else {
-					return ;
-				}
-				svg.circle (point [0], point [1], size, 'star');
-				if (star ['mark']) {
-					var deltaRA = 0;
-					var deltaDE = -(0.03);
-					if (__in__ (star ['name'], STARMARK_ADJUST)) {
-						deltaRA += STARMARK_ADJUST [star ['name']] [0];
-						deltaDE += STARMARK_ADJUST [star ['name']] [1];
-					}
-					var pointText = projectionLatlng (tuple ([starDE + deltaDE, projectRA + deltaRA]));
-					var starname = star ['mark'] [0];
-					svg._raw ('<text\n                transform="translate({},{}) rotate({})"\n                class="starname"\n                text-anchor="middle">{}</text>'.format (svg.ratio (pointText [0]), svg.ratio (pointText [1]), (((projectRA + deltaRA) + pi / 2) / pi) * 180, starname));
-					print (starname, star ['name']);
-				}
-				drawnStars.append (star ['name']);
-			};
-			var drawLine = function (star0, star1) {
-				var n = 10;
-				var ra0 = ((star0 ['RA'] * 15) / 180) * pi;
-				var dec0 = (star0 ['DE'] / 180) * pi;
-				var ra1 = ((star1 ['RA'] * 15) / 180) * pi;
-				var dec1 = (star1 ['DE'] / 180) * pi;
-				if (ra0 > ra1) {
-					var t = dec1;
-					var dec1 = dec0;
-					var dec0 = t;
-					var t = ra1;
-					var ra1 = ra0;
-					var ra0 = t;
-				}
-				if (ra1 - ra0 > pi) {
-					ra0 += 2 * pi;
-					var t = dec1;
-					var dec1 = dec0;
-					var dec0 = t;
-					var t = ra1;
-					var ra1 = ra0;
-					var ra0 = t;
-				}
-				var ra_n = linspace (ra0, ra1, n);
-				var dec_n = linspace (dec0, dec1, n);
-				var points = list ([]);
-				for (var i = 0; i < n; i++) {
-					var __left0__ = tuple ([ra_n [i], dec_n [i]]);
-					var ra_i = __left0__ [0];
-					var dec_i = __left0__ [1];
-					if (dec_i < LATITUDE_OF_SOUTHERN_TROPIC) {
-						continue;
-					}
-					var point = projectionLatlng (tuple ([dec_i, (2 * pi - ra_i) + (pi * 3) / 2]));
-					points.append (point);
-				}
-				svg.polyline (points, 'constellation-line');
-			};
-			for (var constellation of CONSTELLATIONS) {
-				for (var line of constellation ['lines']) {
-					for (var i = 0; i < len (line) - 1; i++) {
-						drawStar (line [i]);
-						drawLine (line [i], line [i + 1]);
-						drawStar (line [i + 1]);
-					}
-				}
-			}
-			return svg;
-		};
+		var Tympan = __init__ (__world__.tympan).Tympan;
+		var Rete = __init__ (__world__.rete).Rete;
+		var Astrolabe = __class__ ('Astrolabe', [object], {
+			__module__: __name__,
+			get __init__ () {return __get__ (this, function (self) {
+				var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_SOUTHERN_TROPIC, 0]));
+				var projected_r_max = __left0__ [0];
+				var _ = __left0__ [1];
+				var __left0__ = projectionLatlng (tuple ([LATITUDE_OF_NORTHERN_TROPIC, 0]));
+				var projected_r_in = __left0__ [0];
+				var __ = __left0__ [1];
+				self.projected_ecliptic_center = (projected_r_max - projected_r_in) / 2;
+				self.projected_ecliptic_radius = (projected_r_max + projected_r_in) / 2;
+				self.projected_r_max = projected_r_max;
+				self.projected_r_in = projected_r_in;
+			});},
+			get getSVG () {return __get__ (this, function (self, latitude) {
+				var mainSVG = SVG ();
+				var subsvg = Tympan (self, latitude);
+				mainSVG._raw ('<g class="tympan">{}</g>'.format (subsvg._toString ()));
+				var subsvg = Rete (self);
+				mainSVG._raw ('<g class="rete">{}</g>'.format (subsvg._toString ()));
+				return mainSVG.toString ();
+			});},
+			get getSunArrow1Angle () {return __get__ (this, function (self, solarEclipticLongitudeInDegrees) {
+				var projected_ecliptic_center = self.projected_ecliptic_center;
+				var projected_ecliptic_radius = self.projected_ecliptic_radius;
+				var getRFromEcliptic = function (theta) {
+					var a = 1;
+					var b = (-(2) * projected_ecliptic_center) * cos (theta);
+					var c = Math.pow (projected_ecliptic_center, 2) - Math.pow (projected_ecliptic_radius, 2);
+					var R = (-(b) + Math.pow (Math.pow (b, 2) - (4 * a) * c, 0.5)) / (2 * a);
+					return R;
+				};
+				var ecllng = (solarEclipticLongitudeInDegrees / 180) * pi + pi / 2;
+				var R = getRFromEcliptic (ecllng);
+				var angle1 = asin ((projected_ecliptic_center * sin (ecllng)) / projected_ecliptic_radius);
+				var retAngle = angle1 + ecllng;
+				return 90 - (retAngle / pi) * 180.0;
+			});},
+			get getSunArrow2Angle () {return __get__ (this, function (self, solarEclipticLongitudeInDegrees) {
+				return -(solarEclipticLongitudeInDegrees);
+			});},
+			get getReteAngle () {return __get__ (this, function (self, solarEclipticLongitudeInDegrees, siderealTimeIn24Hours) {
+				return (siderealTimeIn24Hours * 15 + solarEclipticLongitudeInDegrees) + 270;
+			});}
+		});
 		__pragma__ ('<use>' +
 			'constants' +
 			'math' +
 			'mathfunc' +
+			'rete' +
 			'stardata' +
 			'svg' +
+			'tympan' +
 		'</use>')
 		__pragma__ ('<all>')
+			__all__.Astrolabe = Astrolabe;
 			__all__.CONSTELLATIONS = CONSTELLATIONS;
 			__all__.DISK_EXTENSION = DISK_EXTENSION;
 			__all__.DISK_TIMERING_THICKNESS = DISK_TIMERING_THICKNESS;
@@ -2869,8 +3050,6 @@ function __init__ () {
 			__all__.STARMARK_ADJUST = STARMARK_ADJUST;
 			__all__.SVG = SVG;
 			__all__.Tympan = Tympan;
-			__all__._ = _;
-			__all__.__ = __;
 			__all__.__name__ = __name__;
 			__all__.acos = acos;
 			__all__.add_vector = add_vector;
@@ -2879,15 +3058,9 @@ function __init__ () {
 			__all__.circle_parametric = circle_parametric;
 			__all__.cos = cos;
 			__all__.cross_product = cross_product;
-			__all__.drawStars = drawStars;
-			__all__.getReteAngle = getReteAngle;
-			__all__.getSunArrow1Angle = getSunArrow1Angle;
-			__all__.getSunArrow2Angle = getSunArrow2Angle;
 			__all__.latlng2xyz = latlng2xyz;
 			__all__.linspace = linspace;
 			__all__.pi = pi;
-			__all__.projected_r_in = projected_r_in;
-			__all__.projected_r_max = projected_r_max;
 			__all__.projectionLatlng = projectionLatlng;
 			__all__.projectionXYZ = projectionXYZ;
 			__all__.sin = sin;
