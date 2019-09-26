@@ -1,7 +1,8 @@
 {
     "name": "Virtual Astrolabe",
     "short_name": "VAstrolabe",
-    "start_url": ".",
-    "display": "standalone",
+    "start_url": "./",
+    "display": "fullscreen",
+    "theme_color": "black",
     "description": "Displays a virtual astrolabe on your device."
 }
