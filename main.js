@@ -59,7 +59,7 @@ $(async function(){
 
     $(astrolabe.getSVG(userCoordinate.latitude / 180 * astrosvg.pi))
         .attr("transform", "rotate(-90)")
-        .appendTo("div#tympan");
+        .appendTo("#astrolabe");
     /*    $(astrosvg.Rete())
         .appendTo("div#rete");*/
     $(".tympan-text1").click(switchTympanTextTimeMode);
